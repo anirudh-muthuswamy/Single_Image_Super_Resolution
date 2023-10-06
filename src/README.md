@@ -28,6 +28,3 @@ In your command line
 - To train the base SRCNN model with the VGG Loss, run the train_SRCNN_VGGLoss.py file
 - To train the SRCNN2 model with the VGG Loss, run the train_SRCNN2_VGGLoss.py file
 
-
-## Time Travel Days
-- None Used

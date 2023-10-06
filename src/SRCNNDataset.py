@@ -1,27 +1,17 @@
-''' CS7180 Advanced Perception     09/20/2023             Anirudh Muthuswamy, Gugan Kathiresan'''
+'''Class that defines a custom dataset that reads the Image files from a pandas dataframe.
+
+CS7180 Advanced Perception     09/20/2023             Anirudh Muthuswamy, Gugan Kathiresan'''
+
+
+import torch
 from PIL import Image
-from tqdm import tqdm
-import time
 
 import pandas as pd
 import glob as glob
-import os
-import cv2
-import math
-
 import numpy as np
-import matplotlib.pyplot as plt
 
-import torch
-from torchvision.utils import save_image
-plt.style.use('ggplot')
-from torch.utils.data import DataLoader, Dataset
-import torchvision.models as models
+from torch.utils.data import Dataset
 
-import torch.nn as nn
-import torchvision.transforms as transforms
-import torch.nn.functional as F
-import torch.optim as optim
 
 device = torch.device('cuda')
 

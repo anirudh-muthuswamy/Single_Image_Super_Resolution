@@ -8,19 +8,12 @@
  CS7180 Advanced Perception     09/20/2023             Anirudh Muthuswamy, Gugan Kathiresan
 '''
 
-import torch
-from torchvision.utils import save_image
-from torch.utils.data import DataLoader, Dataset
-import torchvision.models as models
-
 import torch.nn as nn
-import torchvision.transforms as transforms
 import torch.nn.functional as F
-import torch.optim as optim
 
-class CustomConvLayer(nn.Module):
+class SRCNN(nn.Module):
     def __init__(self):
-        super(CustomConvLayer, self).__init__()
+        super(SRCNN, self).__init__()
         self.conv = nn.Conv2d(
             in_channels=3, out_channels=64, kernel_size=9, padding=4)
         self.conv2 = nn.Conv2d(
@@ -29,7 +22,6 @@ class CustomConvLayer(nn.Module):
             in_channels = 32, out_channels=3, kernel_size=5, padding=2)
 
     def forward(self, x):
-
         x = F.relu(self.conv(x))
         x = F.relu(self.conv2(x))
         return self.conv3(x)

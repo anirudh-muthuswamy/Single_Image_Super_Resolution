@@ -1,32 +1,18 @@
-''' CS7180 Advanced Perception     09/20/2023             Anirudh Muthuswamy, Gugan Kathiresan'''
-from PIL import Image
-from tqdm import tqdm
-import time
-import patchify
+''' Class that contains methods for creating high_res/low_res patches and preprocessing the dataset
 
+CS7180 Advanced Perception     09/20/2023             Anirudh Muthuswamy, Gugan Kathiresan'''
+
+from PIL import Image
+import patchify
 import pandas as pd
 import glob as glob
 import os
 import cv2
-import math
-
 import numpy as np
-import matplotlib.pyplot as plt
 
-import torch
-from torchvision.utils import save_image
-plt.style.use('ggplot')
-from torch.utils.data import DataLoader, Dataset
-import torchvision.models as models
-
-import torch.nn as nn
-import torchvision.transforms as transforms
-import torch.nn.functional as F
-import torch.optim as optim
-from torchviz import make_dot
-from torchsummary import summary
 
 class Preprocess():
+
     def __init__(self):
         pass
 

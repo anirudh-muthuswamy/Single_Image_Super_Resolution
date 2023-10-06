@@ -1,7 +1,11 @@
-from SRCNNDataset import SRCNNDataset
-from torch.utils.data import DataLoader, Dataset
+'''Class that creates instances of a train and validation dataset using the custom dataset loader
 
-''' CS7180 Advanced Perception     09/20/2023             Anirudh Muthuswamy, Gugan Kathiresan'''
+CS7180 Advanced Perception     09/20/2023             Anirudh Muthuswamy, Gugan Kathiresan'''
+
+
+
+from SRCNNDataset import SRCNNDataset
+from torch.utils.data import DataLoader
 
 class Dataset():
     def __init__(self):
