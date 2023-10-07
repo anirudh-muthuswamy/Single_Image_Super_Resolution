@@ -16,7 +16,7 @@ from torch.utils.data import Dataset
 
 from dataset import Dataset
 
-device = torch.device('cuda')
+device = torch.device('mps')
 
 class Utils():
     def __init__(self):

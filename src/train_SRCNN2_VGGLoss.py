@@ -5,14 +5,14 @@ import glob as glob
 import torch
 import torch.optim as optim
 from torchsummary import summary
-from SRCNN_VAR_FILTERS import SRCNN_VAR_FILTERS
-from VGG_PERCEPTUAL import VGGPerceptualLoss
+from models.SRCNN_VAR_FILTERS import SRCNN_VAR_FILTERS
+from models.VGG_PERCEPTUAL import VGGPerceptualLoss
 from utils import Utils
 
 if __name__ == "__main__":
     epochs = 10
     lr = 0.001
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'mps' if torch.cuda.is_available() else 'cpu'
     utils = Utils()
 
     SAVE_VALIDATION_RESULTS = True

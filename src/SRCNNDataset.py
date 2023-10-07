@@ -13,7 +13,7 @@ import numpy as np
 from torch.utils.data import Dataset
 
 
-device = torch.device('cuda')
+device = torch.device('mps')
 
 '''Class to perform the necessary initial preprocessing and to call a dataset from a csv file (standard pytorch dataset).
  Performs normalization and creates a dataset tensor for images and labels separately'''

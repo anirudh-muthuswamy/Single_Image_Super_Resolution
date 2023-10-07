@@ -13,26 +13,29 @@ import numpy as np
 
 class Preprocess():
 
-    def __init__(self):
-        pass
+    def __init__(self,input_path):
+        image_extension = 'png'
+        self.image_paths = []
+        self.image_paths.extend(glob.glob(os.path.join(input_path, f'*.{image_extension}')))
 
         ''' Function to store the high resolution patches, i.e, sub-images in the specified folder.
     High resolution images are simple patches of the original image of size 32x32 moved over the
     original image with a stride of 14.'''
 
-    def create_high_res_patches(self, patch_path, patch_size, stride, image_paths, images):
+    def create_high_res_patches(self, patch_path, patch_size, stride, num_images):
 
         os.makedirs(patch_path, exist_ok = True)
 
-        print("Number of images in directory:", len(image_paths))
+        print("Number of images in directory:", len(self.image_paths))
 
         breaktime = 0
-        for image_path in image_paths:
+        for image_path in self.image_paths:
             breaktime += 1
             ''' Obtaining the image'''
             input_image = Image.open(image_path)
             image_name = image_path.split(os.path.sep)[-1].split('.')[0]
             print(" Image name:", image_name)
+            print(input_image.size)
 
             ''' Passing to patchify function'''
             high_res_patches = patchify.patchify(np.array(input_image), patch_size, stride)
@@ -51,7 +54,7 @@ class Preprocess():
             To use the full dataset set the breaktime to the number of images in the dataset.
             For testing purposes, we chose to pick only 5 images, hence images = 5.'''
 
-            if breaktime == images:
+            if breaktime == num_images:
                 break
 
     ''' Function to store the low resolution patches, i.e, sub-images that are
@@ -59,12 +62,12 @@ class Preprocess():
     To acheive this we apply bilinear interpolation to high res patches and
     store the low res patches in a different directory.'''
 
-    def create_low_res_patches(self, patch_path, patch_size, stride, image_paths, images):
+    def create_low_res_patches(self, patch_path, patch_size, stride, num_images):
 
         os.makedirs(patch_path, exist_ok = True)
         breaktime = 0
 
-        for image_path in image_paths:
+        for image_path in self.image_paths:
             breaktime += 1
             ''' Obtaining the image'''
             input_image = Image.open(image_path)
@@ -93,64 +96,20 @@ class Preprocess():
                     upscaled_patch = cv2.resize(low_res_patch, (h,w), interpolation=cv2.INTER_CUBIC)
                     cv2.imwrite(f"{patch_path}/{image_name}_{counter}.png",upscaled_patch)
 
-            if breaktime == images:
+            if breaktime == num_images:
                 break
 
-    ''' Function to get patched dataset details and generate a csv file for the train data.'''
-
-    def get_hrlr_split_patches(self, hr_path, lr_path, train_csv_path):
-        print("Number of high res patches =", len(os.listdir(hr_path)))
-        print("Number of low res patches =", len(os.listdir(lr_path)))
-
-        y_filenames = os.listdir(hr_path)
-        y_filenames = sorted(y_filenames)
-        y_filenames = [hr_path + file for file in y_filenames]
-
-        x_filenames = os.listdir(lr_path)
-        x_filenames = sorted(x_filenames)
-        x_filenames = [lr_path + file for file in x_filenames]
-
-        ''' Adding all x filepaths == low res patches and y filepaths == high res patches to a dataframe.'''
-        data = pd.DataFrame({'x_filepath':x_filenames, 'y_filepath':y_filenames})
-        data_randomized = data.sample(frac=1, random_state=42).reset_index(drop=True)
-
-        data_randomized.to_csv(train_csv_path, index = False)
-
-    # creating test csv for validating model with 50 low resolution images
-
-    ''' Function to get low res Image dataset details and generate a csv file for the test split.'''
-
-    def get_hrlr_split_Images(self, hr_path, lr_path, csv_path):
-        print("Number of high res patches =", len(os.listdir(hr_path)))
-        print("Number of low res patches =", len(os.listdir(lr_path)))
-
-        y_filenames = os.listdir(hr_path)[0:50]
-        y_filenames = sorted(y_filenames)
-        y_filenames = [hr_path + '/' + file for file in y_filenames]
-        print(y_filenames[:5])
-
-        x_filenames = os.listdir(lr_path)
-        x_filenames = sorted(x_filenames)
-        x_filenames = [lr_path + '/' + file for file in x_filenames]
-
-        ''' Adding all x filepaths == low res patches and y filepaths == high res patches to a dataframe.'''
-        data = pd.DataFrame({'x_filepath':x_filenames, 'y_filepath':y_filenames})
-        data_randomized = data.sample(frac=1, random_state=42).reset_index(drop=True)
-
-        data_randomized.to_csv(csv_path, index = False)
-
-
-    ''' Function to store the low resolution image for the validation set, i.e, images
+        ''' Function to store the low resolution image for the validation set, i.e, low res images
     generated from the original high res full image
     To acheive this we apply bilinear interpolation to size-halved high res image and
-    store the low res patches in a different directory.'''
+    store the low res image in a different directory.'''
 
-    def create_low_res_Images(self, low_res_image_path, image_paths, images):
+    def create_low_res_images(self, low_res_image_path, images):
 
         os.makedirs(low_res_image_path, exist_ok = True)
         breaktime = 0
 
-        for image_path in image_paths:
+        for image_path in self.image_paths:
             breaktime += 1
             ''' Obtaining the image'''
             print(image_path)
@@ -168,29 +127,34 @@ class Preprocess():
             if breaktime == images:
                 break
 
+    ''' Function to get patched dataset details and generate a csv file for the train data.'''
 
-if __name__ == "__main__":
-    preprocess = Preprocess()
+    def get_pandas_df(self, hr_path, lr_path, train_csv_path, num_images=-1):
 
-    stride = 14
-    patch_size = (32, 32, 3)
-    input_path = "DIV2K2017/DIV2K/DIV2K_train_HR"
-    image_extension = 'png'
-    image_paths = []
-    image_paths.extend(glob.glob(os.path.join(input_path, f'*.{image_extension}')))
+        if num_images == -1:
+            print("Number of high res files =", len(os.listdir(hr_path)))
+            print("Number of low res files =", len(os.listdir(lr_path)))
+        else:
+            print("Number of high res files =", len(os.listdir(hr_path)[0:num_images]))
+            print("Number of low res files =", len(os.listdir(lr_path)))
 
-    print("Creating High Res Patches...")
-    preprocess.create_high_res_patches("high_res_patches_5_Imgs", patch_size, stride, image_paths, 5)
-    print('')
+        if num_images == -1:
+            y_filenames = os.listdir(hr_path)[0:len(os.listdir(hr_path))]
+        else:
+            y_filenames = os.listdir(hr_path)[0:num_images]
+        y_filenames = sorted(y_filenames)
+        y_filenames = [hr_path + file for file in y_filenames]
+        print(len(y_filenames))
 
-    print("Creating Low Res Patches...")
-    preprocess.create_low_res_patches("low_res_patches_5_Imgs", patch_size, stride, image_paths, 5)
-    print('')
-    print("Creating Low Res Images...")
-    preprocess.create_low_res_Images("low_res_Images", image_paths, 50)
-    # create_low_res("low_res_patches_50_Imgs", patch_size, stride, image_paths, 50)
-    print('')
-    preprocess.get_hrlr_split_patches('/content/high_res_patches_5_Imgs/', '/content/low_res_patches_5_Imgs/',
-                'train_data_5_Imgs_patched.csv')
-    preprocess.get_hrlr_split_Images('/content/DIV2K2017/DIV2K/DIV2K_train_HR', '/content/low_res_Images',
-                'test_data_50_Imgs.csv')
+        if num_images == -1:
+            x_filenames = os.listdir(lr_path)[0:len(os.listdir(lr_path))]
+        else:
+            x_filenames = os.listdir(lr_path)[0:num_images]
+        x_filenames = sorted(x_filenames)
+        x_filenames = [lr_path + file for file in x_filenames]
+
+        ''' Adding all x filepaths == low res files and y filepaths == high res files to a dataframe.'''
+        data = pd.DataFrame({'x_filepath':x_filenames, 'y_filepath':y_filenames})
+        data_randomized = data.sample(frac=1, random_state=42).reset_index(drop=True)
+
+        data_randomized.to_csv(train_csv_path, index = False)

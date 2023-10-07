@@ -8,15 +8,15 @@ plt.style.use('ggplot')
 
 import torch.optim as optim
 from torchsummary import summary
-from SRCNN import SRCNN
+from models.SRCNN import SRCNN
 from utils import Utils
-from VGG_PERCEPTUAL import VGGPerceptualLoss
+from models.VGG_PERCEPTUAL import VGGPerceptualLoss
 
 
 if __name__ == "__main__":
     epochs = 10
     lr = 0.001
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = 'mps' if torch.cuda.is_available() else 'cpu'
     utils = Utils()
 
     SAVE_VALIDATION_RESULTS = True
