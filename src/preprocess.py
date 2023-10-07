@@ -143,7 +143,7 @@ class Preprocess():
         else:
             y_filenames = os.listdir(hr_path)[0:num_images]
         y_filenames = sorted(y_filenames)
-        y_filenames = [hr_path + file for file in y_filenames]
+        y_filenames = [hr_path + '/' + file for file in y_filenames]
         print(len(y_filenames))
 
         if num_images == -1:
@@ -151,7 +151,7 @@ class Preprocess():
         else:
             x_filenames = os.listdir(lr_path)[0:num_images]
         x_filenames = sorted(x_filenames)
-        x_filenames = [lr_path + file for file in x_filenames]
+        x_filenames = [lr_path + '/' + file for file in x_filenames]
 
         ''' Adding all x filepaths == low res files and y filepaths == high res files to a dataframe.'''
         data = pd.DataFrame({'x_filepath':x_filenames, 'y_filepath':y_filenames})

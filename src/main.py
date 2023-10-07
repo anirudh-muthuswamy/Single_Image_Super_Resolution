@@ -1,6 +1,13 @@
 import argparse
 import ast
 from preprocess import Preprocess
+import torch
+import torch.optim as optim
+import torch.nn as nn
+from utils import Utils
+from models.SRCNN import SRCNN
+from models.SRCNN_VAR_FILTERS import SRCNN_VAR_FILTERS
+from models.VGG_PERCEPTUAL import VGGPerceptualLoss
 
 def import_class(class_name):
     module = __import__(class_name.lower())
@@ -20,6 +27,14 @@ def main():
     parser.add_argument("--low_res_path", help = 'path to low res files')
     parser.add_argument("--high_res_path", help = 'path to high res files')
     parser.add_argument("--output_csv_path", help = 'path to output CSV files')
+
+    parser.add_argument("--model", help="enter the model class")
+    parser.add_argument("--lr", help = 'enter the learning rate')
+    parser.add_argument("--loss",help='enter the loss function to use')
+    parser.add_argument("--epochs", help = 'enter the number of epochs to run the model')
+    parser.add_argument("--train_csv_file", help = 'path to training CSV file')
+    parser.add_argument("--valid_csv_file", help='path to testing CSV file')
+    parser.add_argument('--output_dir',help='enter output director to store results')
     
     args = parser.parse_args()
 
@@ -69,7 +84,116 @@ def main():
                     
         else:
             print('invalid method')
+    
+    elif args.task == 'train':
+        if args.model and args.lr and args.loss and args.epochs \
+            and args.train_csv_file and args.valid_csv_file and args.output_dir:
 
+            device = 'mps' if torch.backends.mps.is_available() else 'cpu'
+            
+            if args.loss == 'mse':
+                criterion = nn.MSELoss()
+            elif args.loss =='vgg':
+                criterion = VGGPerceptualLoss()
+
+            utils = Utils()
+
+            if args.model == 'SRCNN':
+                model = SRCNN().to(device)
+            elif args.model == 'SRCNN_VAR_FILTERS':
+                model = SRCNN_VAR_FILTERS.to(device)
+
+            optimizer = optim.Adam(model.parameters(), float(args.lr))
+
+            utils.start_training(model,
+                                 int(args.epochs),
+                                 optimizer,
+                                 criterion,
+                                 args.train_csv_file,
+                                 args.valid_csv_file,
+                                 args.output_dir)
+        else:
+            print('invalid arguments')
+    else:
+        print('invalid task')
+            
 if __name__ == "__main__":
     main()
+
+    #to replicate:
+
+    #python src/main.py --task preprocess 
+    #                   --input_path src/DIV2K2017/DIV2K/DIV2K_train_HR 
+    #                   --method create_high_res_patches 
+    #                   --stride 14 
+    #                   --patch_size "(32,32,3)"  
+    #                   --num_images 5
+
+    #python src/main.py --task preprocess 
+    #                   --input_path src/DIV2K2017/DIV2K/DIV2K_train_HR 
+    #                   --method create_low_res_patches  
+    #                   --stride 14 
+    #                   --patch_size "(32,32,3)"  
+    #                   --num_images 5
+
+    #python src/main.py --task preprocess 
+    #                   --input_path src/DIV2K2017/DIV2K/DIV2K_train_HR 
+    #                   --method create_low_res_images 
+    #                   --num_images 50
+
+    #python src/main.py --task preprocess 
+    #                   --input_path src/DIV2K2017/DIV2K/DIV2K_train_HR 
+    #                   --method get_pandas_df 
+    #                   --high_res_path high_res_patches_5_imgs 
+    #                   --low_res_path low_res_patches_5_imgs 
+    #                   --output_csv_path train_data_5_imgs_patched.csv
+
+    # python src/main.py --task preprocess 
+    #                   --input_path src/DIV2K2017/DIV2K/DIV2K_train_HR 
+    #                   --method get_pandas_df 
+    #                   --high_res_path src/DIV2K2017/DIV2K/DIV2K_train_HR  
+    #                   --low_res_path low_res_50_imgs  
+    #                   --output_csv_path test_data_50_imgs.csv 
+    #                   --num_images 50
+
+    #Training SRCNN with MSE
+
+    #python src/main.py --task train 
+    #                   --model SRCNN 
+    #                   --lr 0.001 
+    #                   --epochs 10 
+    #                   --loss mse 
+    #                   --train_csv_file train_data_5_imgs_patched.csv 
+    #                   --valid_csv_file test_data_50_imgs.csv 
+    #                   --output_dir outputs/SRCNN_MSE_LOSS    
+
+    #Training SRCNN_VAR_FILTERS with MSE
+
+    #python src/main.py --task train 
+    #                   --model SRCNN_VAR_FILTERS
+    #                   --lr 0.001 
+    #                   --epochs 10 
+    #                   --loss mse 
+    #                   --train_csv_file train_data_5_imgs_patched.csv 
+    #                   --valid_csv_file test_data_50_imgs.csv 
+    #                   --output_dir outputs/SRCNN_VAR_FILTERS_MSE_LOSS    
+
+    #Training SRCNN_VAR_FILTERS with VGG Perceptual Loss
+
+    #python src/main.py --task train 
+    #                   --model SRCNN_VAR_FILTERS
+    #                   --lr 0.001 
+    #                   --epochs 10 
+    #                   --loss vgg 
+    #                   --train_csv_file train_data_5_imgs_patched.csv 
+    #                   --valid_csv_file test_data_50_imgs.csv 
+    #                   --output_dir outputs/SRCNN_VAR_FILTERS_VGG_LOSS 
+
+
+
+
+    
+
+
+
 
