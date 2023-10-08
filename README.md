@@ -1,22 +1,14 @@
-# ImageEnhancement-cs7180
-
-This is the submission for 
+# ImageEnhancement
 
 Image Enhancement - Project 1
 for the course "CS7180 Advanced Perception"
 
-20th September 2023
-
 ---------------------------------------------
 Details
 
-## Project Report
-
-- FileName - "cs7180-AnirudhGugan-Project1.pdf"
-
 ## Authors
-- Anirudh Muthuswamy, NUID - 002783250
-- Gugan Kathiresan, NUID -002756523
+- Anirudh Muthuswamy
+- Gugan Kathiresan
 
 ## Operating System
 - Google Colab Ubuntu - Tesla T4 GPU
@@ -39,11 +31,5 @@ In your command line
 - Download the our version of the DIV2k dataset from the link https://www.kaggle.com/datasets/anirudhmuthuswamy/div2k-hr-and-lr
 - Unzip the files and place it in the working directory
 - Install all requirements from the "requirements.txt" file
-- Run the "preprocess.py" file that generates all the necessary dataset files
-- To train the base SRCNN model, run the train_SRCNN.py file
-- To train the base SRCNN model with the VGG Loss, run the train_SRCNN_VGGLoss.py file
-- To train the SRCNN2 model with the VGG Loss, run the train_SRCNN2_VGGLoss.py file
+- The command line instructions to replicate the results of the ipynb file is available in the main.py file. Run the commands as listed. 
 
-
-## Time Travel Days
-- None Used
