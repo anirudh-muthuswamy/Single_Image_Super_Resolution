@@ -5,8 +5,9 @@ for the course "CS7180 Advanced Perception"
 
 ---------------------------------------------
 
-<img width="468" alt="image" src="https://github.com/anirudh-muthuswamy/Image_Enhancement/assets/126427302/7809e391-6e76-4c8f-80ec-3e990c5fcd86">
-SRCNN v2 model with parallel input convolution layer and concatenation![image](https://github.com/anirudh-muthuswamy/Image_Enhancement/assets/126427302/409b339f-394e-4e89-8e2d-be7694c3942f)
+<img width="468" alt="image" align="middle" src="https://github.com/anirudh-muthuswamy/Image_Enhancement/assets/126427302/7809e391-6e76-4c8f-80ec-3e990c5fcd86">
+
+SRCNN v2 model with parallel input convolution layer and concatenation
 
 
 Details
